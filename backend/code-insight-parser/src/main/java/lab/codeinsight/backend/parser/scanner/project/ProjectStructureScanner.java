@@ -15,6 +15,7 @@ import lab.codeinsight.backend.parser.model.scan.ProjectStructure;
 import lab.codeinsight.backend.parser.parser.ast.AstParser;
 import lab.codeinsight.backend.parser.support.PathSupport;
 
+/** Scans filesystem structure and builds project-level Java source topology. */
 public class ProjectStructureScanner {
 
   private final AstParser astParser;
@@ -23,6 +24,7 @@ public class ProjectStructureScanner {
     this.astParser = astParser;
   }
 
+  /** Returns project structure with Java files, source directories and inferred base packages. */
   public ProjectStructure scan(Path projectRoot) {
     Path normalizedRoot = projectRoot.toAbsolutePath().normalize();
     if (!Files.exists(normalizedRoot) || !Files.isDirectory(normalizedRoot)) {
@@ -71,6 +73,7 @@ public class ProjectStructureScanner {
     Path relative = projectRoot.relativize(javaPath);
     int javaIndex = PathSupport.indexOfPathElement(relative, "java");
     if (javaIndex >= 0) {
+      // Preserve conventional source root like src/main/java or src/test/java.
       return projectRoot.resolve(relative.subpath(0, javaIndex + 1)).normalize();
     }
     return javaPath.getParent();
