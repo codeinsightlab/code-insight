@@ -47,6 +47,12 @@ cd backend
 mvn -pl code-insight-boot -am spring-boot:run
 ```
 
+Formatting (IntelliJ IDEA style):
+
+- Use IntelliJ IDEA `Reformat Code` as the source of truth.
+- Project formatting preferences are defined in `.editorconfig`.
+- Avoid using external formatters that conflict with IntelliJ style.
+
 ## Coding Guidelines
 
 - Controller should not contain business logic

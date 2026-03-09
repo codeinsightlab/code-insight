@@ -47,6 +47,12 @@ cd backend
 mvn -pl code-insight-boot -am spring-boot:run
 ```
 
+代码格式（IntelliJ IDEA 风格）：
+
+- 以 IntelliJ IDEA 的 `Reformat Code` 作为格式基准。
+- 项目格式偏好由 `.editorconfig` 统一定义。
+- 避免使用与 IntelliJ 风格冲突的外部格式化器。
+
 ## 编码规范
 
 - Controller 不写业务逻辑

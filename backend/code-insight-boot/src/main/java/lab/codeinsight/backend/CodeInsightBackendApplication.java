@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class CodeInsightBackendApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(CodeInsightBackendApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(CodeInsightBackendApplication.class, args);
+  }
 }

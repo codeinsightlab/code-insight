@@ -28,4 +28,5 @@
         <module>code-insight-web</module>
         <module>code-insight-boot</module>
     </modules>
+
 </project>
