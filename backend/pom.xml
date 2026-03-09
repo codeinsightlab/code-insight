@@ -22,6 +22,7 @@
     </properties>
 
     <modules>
+        <module>code-insight-parser</module>
         <module>code-insight-model</module>
         <module>code-insight-dal</module>
         <module>code-insight-main</module>
