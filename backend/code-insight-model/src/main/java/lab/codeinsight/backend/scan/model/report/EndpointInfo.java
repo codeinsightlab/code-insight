@@ -1,3 +1,7 @@
 package lab.codeinsight.backend.scan.model.report;
 
-public record EndpointInfo(String path, String httpMethod, String controllerClass, String methodName) {}
+/**
+ * Endpoint scan result for one controller method mapping.
+ */
+public record EndpointInfo(String path, String httpMethod, String controllerClass, String methodName) {
+}

@@ -12,23 +12,35 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * HTTP controller exposing project CRUD-lite APIs.
+ */
 @RestController
 @RequestMapping("/api/projects")
 public class ProjectController {
 
-  private final ProjectService projectService;
+	private final ProjectService projectService;
 
-  public ProjectController(ProjectService projectService) {
-    this.projectService = projectService;
-  }
+	/**
+	 * Creates project controller with service dependency.
+	 */
+	public ProjectController(ProjectService projectService) {
+		this.projectService = projectService;
+	}
 
-  @PostMapping
-  public ApiResponse<ProjectView> createProject(@Valid @RequestBody CreateProjectRequest request) {
-    return ApiResponse.ok(projectService.create(request));
-  }
+	/**
+	 * Creates a project from request body.
+	 */
+	@PostMapping
+	public ApiResponse<ProjectView> createProject(@Valid @RequestBody CreateProjectRequest request) {
+		return ApiResponse.ok(projectService.create(request));
+	}
 
-  @GetMapping
-  public ApiResponse<List<ProjectView>> listProjects() {
-    return ApiResponse.ok(projectService.list());
-  }
+	/**
+	 * Lists all existing projects.
+	 */
+	@GetMapping
+	public ApiResponse<List<ProjectView>> listProjects() {
+		return ApiResponse.ok(projectService.list());
+	}
 }

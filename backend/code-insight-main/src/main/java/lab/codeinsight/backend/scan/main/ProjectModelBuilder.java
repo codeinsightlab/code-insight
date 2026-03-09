@@ -9,25 +9,23 @@ import lab.codeinsight.backend.scan.model.report.ProjectModel;
 import lab.codeinsight.backend.scan.model.report.ProjectStats;
 import org.springframework.stereotype.Service;
 
+/**
+ * Aggregates scanner outputs into unified project model and stats.
+ */
 @Service
 public class ProjectModelBuilder {
 
-  public ProjectModel build(
-      List<ControllerInfo> controllers,
-      List<EndpointInfo> endpoints,
-      List<EntityInfo> entities,
-      List<JavaSourceFileInfo> javaFiles) {
+	/**
+	 * Builds the unified project model from scanner outputs.
+	 */
+	public ProjectModel build(List<ControllerInfo> controllers, List<EndpointInfo> endpoints, List<EntityInfo> entities,
+			List<JavaSourceFileInfo> javaFiles) {
 
-    int totalEntityFields = entities.stream().mapToInt(entity -> entity.fields().size()).sum();
+		int totalEntityFields = entities.stream().mapToInt(entity -> entity.fields().size()).sum();
 
-    ProjectStats statistics =
-        new ProjectStats(
-            javaFiles.size(),
-            controllers.size(),
-            endpoints.size(),
-            entities.size(),
-            totalEntityFields);
+		ProjectStats statistics = new ProjectStats(javaFiles.size(), controllers.size(), endpoints.size(),
+				entities.size(), totalEntityFields);
 
-    return new ProjectModel(controllers, endpoints, entities, statistics);
-  }
+		return new ProjectModel(controllers, endpoints, entities, statistics);
+	}
 }

@@ -4,14 +4,17 @@ import lab.codeinsight.backend.scan.model.report.ProjectModel;
 import lab.codeinsight.backend.scan.model.report.ProjectReport;
 import org.springframework.stereotype.Service;
 
+/**
+ * Converts project model into final API-facing report payload.
+ */
 @Service
 public class ReportGenerator {
 
-  public ProjectReport generate(ProjectModel projectModel) {
-    return new ProjectReport(
-        projectModel.controllers().size(),
-        projectModel.endpoints().size(),
-        projectModel.entities().size(),
-        projectModel.statistics().totalJavaFiles());
-  }
+	/**
+	 * Generates report counters from unified project model.
+	 */
+	public ProjectReport generate(ProjectModel projectModel) {
+		return new ProjectReport(projectModel.controllers().size(), projectModel.endpoints().size(),
+				projectModel.entities().size(), projectModel.statistics().totalJavaFiles());
+	}
 }

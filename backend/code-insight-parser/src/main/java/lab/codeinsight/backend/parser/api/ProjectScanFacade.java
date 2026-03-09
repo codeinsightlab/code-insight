@@ -13,29 +13,34 @@ import lab.codeinsight.backend.parser.scanner.source.JavaSourceLoader;
 /**
  * External entry point for parser module callers.
  *
- * <p>Current minimal flow builds a unified scan model that includes project structure, Java source
- * files, controllers, and endpoints.
+ * <p>
+ * Current minimal flow builds a unified scan model that includes project
+ * structure, Java source files, controllers, and endpoints.
  */
 public class ProjectScanFacade {
 
-  private final ProjectScanner projectScanner;
+	private final ProjectScanner projectScanner;
 
-  public ProjectScanFacade() {
-    this(
-        new ProjectScanner(
-            new ProjectStructureScanner(new AstParser()),
-            new JavaSourceLoader(),
-            new ControllerScanner(),
-            new EndpointScanner()));
-  }
+	/**
+	 * Creates facade with default parser pipeline dependencies.
+	 */
+	public ProjectScanFacade() {
+		this(new ProjectScanner(new ProjectStructureScanner(new AstParser()), new JavaSourceLoader(),
+				new ControllerScanner(), new EndpointScanner()));
+	}
 
-  public ProjectScanFacade(ProjectScanner projectScanner) {
-    this.projectScanner = projectScanner;
-  }
+	/**
+	 * Creates facade with explicit scanner dependency (mainly for tests/wiring).
+	 */
+	public ProjectScanFacade(ProjectScanner projectScanner) {
+		this.projectScanner = projectScanner;
+	}
 
-  /** Scans a project by path and returns the unified parser scan model. */
-  public ProjectScanModel scanProject(String projectPath) {
-    ScanContext context = new ScanContext(Path.of(projectPath).toAbsolutePath().normalize());
-    return projectScanner.scanProject(context).data();
-  }
+	/**
+	 * Scans a project by path and returns the unified parser scan model.
+	 */
+	public ProjectScanModel scanProject(String projectPath) {
+		ScanContext context = new ScanContext(Path.of(projectPath).toAbsolutePath().normalize());
+		return projectScanner.scanProject(context).data();
+	}
 }

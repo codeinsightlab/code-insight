@@ -17,78 +17,81 @@ import lab.codeinsight.backend.scan.model.report.ProjectReport;
 import lab.codeinsight.backend.scan.model.report.ProjectStructure;
 import org.springframework.stereotype.Service;
 
+/**
+ * End-to-end scan orchestrator for the Phase 1 scan pipeline.
+ */
 @Service
 public class ProjectScanner {
 
-  private final ProjectStructureScanner projectStructureScanner;
-  private final JavaSourceLoader javaSourceLoader;
-  private final ControllerScanner controllerScanner;
-  private final EndpointScanner endpointScanner;
-  private final EntityScanner entityScanner;
-  private final ProjectModelBuilder projectModelBuilder;
-  private final ReportGenerator reportGenerator;
+	private final ProjectStructureScanner projectStructureScanner;
+	private final JavaSourceLoader javaSourceLoader;
+	private final ControllerScanner controllerScanner;
+	private final EndpointScanner endpointScanner;
+	private final EntityScanner entityScanner;
+	private final ProjectModelBuilder projectModelBuilder;
+	private final ReportGenerator reportGenerator;
 
-  public ProjectScanner(
-      ProjectStructureScanner projectStructureScanner,
-      JavaSourceLoader javaSourceLoader,
-      ControllerScanner controllerScanner,
-      EndpointScanner endpointScanner,
-      EntityScanner entityScanner,
-      ProjectModelBuilder projectModelBuilder,
-      ReportGenerator reportGenerator) {
-    this.projectStructureScanner = projectStructureScanner;
-    this.javaSourceLoader = javaSourceLoader;
-    this.controllerScanner = controllerScanner;
-    this.endpointScanner = endpointScanner;
-    this.entityScanner = entityScanner;
-    this.projectModelBuilder = projectModelBuilder;
-    this.reportGenerator = reportGenerator;
-  }
+	/**
+	 * Creates project scanner with all pipeline dependencies.
+	 */
+	public ProjectScanner(ProjectStructureScanner projectStructureScanner, JavaSourceLoader javaSourceLoader,
+			ControllerScanner controllerScanner, EndpointScanner endpointScanner, EntityScanner entityScanner,
+			ProjectModelBuilder projectModelBuilder, ReportGenerator reportGenerator) {
+		this.projectStructureScanner = projectStructureScanner;
+		this.javaSourceLoader = javaSourceLoader;
+		this.controllerScanner = controllerScanner;
+		this.endpointScanner = endpointScanner;
+		this.entityScanner = entityScanner;
+		this.projectModelBuilder = projectModelBuilder;
+		this.reportGenerator = reportGenerator;
+	}
 
-  public ProjectReport scan(String projectPath) {
-    ProjectStructure projectStructure = projectStructureScanner.scan(projectPath);
-    Path projectRoot = Path.of(projectStructure.projectPath()).toAbsolutePath().normalize();
+	/**
+	 * Scans one project path and returns report output.
+	 */
+	public ProjectReport scan(String projectPath) {
+		ProjectStructure projectStructure = projectStructureScanner.scan(projectPath);
+		Path projectRoot = Path.of(projectStructure.projectPath()).toAbsolutePath().normalize();
 
-    List<JavaSourceFile> javaSources =
-        javaSourceLoader.loadJavaSources(projectRoot, projectStructure.javaFiles());
-    List<JavaSourceUnit> sourceUnits = parseAll(projectRoot, javaSources);
+		List<JavaSourceFile> javaSources = javaSourceLoader.loadJavaSources(projectRoot, projectStructure.javaFiles());
+		List<JavaSourceUnit> sourceUnits = parseAll(projectRoot, javaSources);
 
-    List<JavaSourceFileInfo> javaFiles = toJavaFileInfos(projectRoot, sourceUnits);
-    List<ControllerInfo> controllers = controllerScanner.scan(sourceUnits);
-    List<EndpointInfo> endpoints = endpointScanner.scan(controllers, sourceUnits);
-    List<EntityInfo> entities = entityScanner.scan(sourceUnits);
+		List<JavaSourceFileInfo> javaFiles = toJavaFileInfos(projectRoot, sourceUnits);
+		List<ControllerInfo> controllers = controllerScanner.scan(sourceUnits);
+		List<EndpointInfo> endpoints = endpointScanner.scan(controllers, sourceUnits);
+		List<EntityInfo> entities = entityScanner.scan(sourceUnits);
 
-    ProjectModel projectModel = projectModelBuilder.build(controllers, endpoints, entities, javaFiles);
+		ProjectModel projectModel = projectModelBuilder.build(controllers, endpoints, entities, javaFiles);
 
-    return reportGenerator.generate(projectModel);
-  }
+		return reportGenerator.generate(projectModel);
+	}
 
-  private List<JavaSourceUnit> parseAll(Path projectRoot, List<JavaSourceFile> javaSources) {
-    List<JavaSourceUnit> sourceUnits = new ArrayList<>();
-    for (JavaSourceFile javaSource : javaSources) {
-      Path javaPath = projectRoot.resolve(javaSource.filePath()).normalize();
-      try {
-        CompilationUnit compilationUnit = StaticJavaParser.parse(javaSource.sourceCode());
-        sourceUnits.add(new JavaSourceUnit(javaPath, javaSource, compilationUnit));
-      } catch (Exception ignored) {
-        // Keep scan resilient: skip files that cannot be parsed.
-      }
-    }
-    return sourceUnits;
-  }
+	/**
+	 * Parses all Java source files into AST units with path metadata.
+	 */
+	private List<JavaSourceUnit> parseAll(Path projectRoot, List<JavaSourceFile> javaSources) {
+		List<JavaSourceUnit> sourceUnits = new ArrayList<>();
+		for (JavaSourceFile javaSource : javaSources) {
+			Path javaPath = projectRoot.resolve(javaSource.filePath()).normalize();
+			try {
+				CompilationUnit compilationUnit = StaticJavaParser.parse(javaSource.sourceCode());
+				sourceUnits.add(new JavaSourceUnit(javaPath, javaSource, compilationUnit));
+			} catch (Exception ignored) {
+				// Keep scan resilient: skip files that cannot be parsed.
+			}
+		}
+		return sourceUnits;
+	}
 
-  private List<JavaSourceFileInfo> toJavaFileInfos(Path projectRoot, List<JavaSourceUnit> sourceUnits) {
-    return sourceUnits.stream()
-        .map(
-            unit ->
-                new JavaSourceFileInfo(
-                    projectRoot.relativize(unit.sourcePath()).toString().replace('\\', '/'),
-                    unit.javaSourceFile().packageName(),
-                    unit
-                        .compilationUnit()
-                        .getPrimaryType()
-                        .map(TypeDeclaration::getNameAsString)
-                        .orElse("")))
-        .toList();
-  }
+	/**
+	 * Converts parsed units into lightweight Java file info records.
+	 */
+	private List<JavaSourceFileInfo> toJavaFileInfos(Path projectRoot, List<JavaSourceUnit> sourceUnits) {
+		return sourceUnits.stream()
+				.map(unit -> new JavaSourceFileInfo(
+						projectRoot.relativize(unit.sourcePath()).toString().replace('\\', '/'),
+						unit.javaSourceFile().packageName(),
+						unit.compilationUnit().getPrimaryType().map(TypeDeclaration::getNameAsString).orElse("")))
+				.toList();
+	}
 }

@@ -30,4 +30,29 @@
         <module>code-insight-boot</module>
     </modules>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.44.2</version>
+                <configuration>
+                    <java>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <importOrder/>
+                        <removeUnusedImports/>
+                        <eclipse>
+                            <file>${maven.multiModuleProjectDirectory}/config/spotless/eclipse-java-formatter.xml</file>
+                        </eclipse>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </java>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

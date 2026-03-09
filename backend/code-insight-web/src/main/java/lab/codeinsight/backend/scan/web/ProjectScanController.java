@@ -12,27 +12,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * HTTP controller exposing scan endpoints for structure and report outputs.
+ */
 @RestController
 @RequestMapping("/api/scan")
 public class ProjectScanController {
 
-  private final ProjectScanner projectScanner;
-  private final ProjectStructureScanner projectStructureScanner;
+	private final ProjectScanner projectScanner;
+	private final ProjectStructureScanner projectStructureScanner;
 
-  public ProjectScanController(
-      ProjectScanner projectScanner, ProjectStructureScanner projectStructureScanner) {
-    this.projectScanner = projectScanner;
-    this.projectStructureScanner = projectStructureScanner;
-  }
+	/**
+	 * Creates scan controller with scan orchestration dependencies.
+	 */
+	public ProjectScanController(ProjectScanner projectScanner, ProjectStructureScanner projectStructureScanner) {
+		this.projectScanner = projectScanner;
+		this.projectStructureScanner = projectStructureScanner;
+	}
 
-  @PostMapping("/project-structure")
-  public ApiResponse<ProjectStructure> scanProjectStructure(
-      @Valid @RequestBody ScanProjectRequest request) {
-    return ApiResponse.ok(projectStructureScanner.scan(request.projectPath()));
-  }
+	/**
+	 * Scans project structure only, without full report aggregation.
+	 */
+	@PostMapping("/project-structure")
+	public ApiResponse<ProjectStructure> scanProjectStructure(@Valid @RequestBody ScanProjectRequest request) {
+		return ApiResponse.ok(projectStructureScanner.scan(request.projectPath()));
+	}
 
-  @PostMapping({"", "/report"})
-  public ApiResponse<ProjectReport> scan(@Valid @RequestBody ScanProjectRequest request) {
-    return ApiResponse.ok(projectScanner.scan(request.projectPath()));
-  }
+	/**
+	 * Runs full scan pipeline and returns report summary.
+	 */
+	@PostMapping({"", "/report"})
+	public ApiResponse<ProjectReport> scan(@Valid @RequestBody ScanProjectRequest request) {
+		return ApiResponse.ok(projectScanner.scan(request.projectPath()));
+	}
 }

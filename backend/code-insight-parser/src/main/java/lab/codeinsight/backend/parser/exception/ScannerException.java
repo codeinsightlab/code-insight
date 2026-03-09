@@ -1,9 +1,14 @@
 package lab.codeinsight.backend.parser.exception;
 
-/** Thrown when scanner traversal or parsing pipeline fails unexpectedly. */
+/**
+ * Thrown when scanner traversal or parsing pipeline fails unexpectedly.
+ */
 public class ScannerException extends RuntimeException {
 
-  public ScannerException(String message, Throwable cause) {
-    super(message, cause);
-  }
+	/**
+	 * Creates scanner exception with message and root cause.
+	 */
+	public ScannerException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

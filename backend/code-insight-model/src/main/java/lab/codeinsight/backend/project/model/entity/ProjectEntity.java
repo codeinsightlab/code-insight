@@ -2,41 +2,68 @@ package lab.codeinsight.backend.project.model.entity;
 
 import java.time.LocalDateTime;
 
+/**
+ * Persistence model representing a tracked project.
+ */
 public class ProjectEntity {
-  private Long id;
-  private String name;
-  private String path;
-  private LocalDateTime createdAt;
+	private Long id;
+	private String name;
+	private String path;
+	private LocalDateTime createdAt;
 
-  public Long getId() {
-    return id;
-  }
+	/**
+	 * Returns project id.
+	 */
+	public Long getId() {
+		return id;
+	}
 
-  public void setId(Long id) {
-    this.id = id;
-  }
+	/**
+	 * Sets project id.
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-  public String getName() {
-    return name;
-  }
+	/**
+	 * Returns project name.
+	 */
+	public String getName() {
+		return name;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	/**
+	 * Sets project name.
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 
-  public String getPath() {
-    return path;
-  }
+	/**
+	 * Returns project filesystem path.
+	 */
+	public String getPath() {
+		return path;
+	}
 
-  public void setPath(String path) {
-    this.path = path;
-  }
+	/**
+	 * Sets project filesystem path.
+	 */
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
+	/**
+	 * Returns creation timestamp.
+	 */
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
+	/**
+	 * Sets creation timestamp.
+	 */
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
 }

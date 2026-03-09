@@ -9,36 +9,43 @@ import lab.codeinsight.backend.scan.model.report.EntityInfo;
 import lab.codeinsight.backend.scan.model.report.FieldInfo;
 import org.springframework.stereotype.Service;
 
+/**
+ * Scans entity fields and resolves column-level metadata.
+ */
 @Service
 public class FieldScanner {
 
-  public List<FieldInfo> scan(EntityInfo entityInfo) {
-    return entityInfo.fields();
-  }
+	/**
+	 * Returns field metadata already contained in an entity info record.
+	 */
+	public List<FieldInfo> scan(EntityInfo entityInfo) {
+		return entityInfo.fields();
+	}
 
-  public List<FieldInfo> scan(ClassOrInterfaceDeclaration declaration) {
-    List<FieldInfo> fields = new ArrayList<>();
+	/**
+	 * Extracts field metadata from a class declaration.
+	 */
+	public List<FieldInfo> scan(ClassOrInterfaceDeclaration declaration) {
+		List<FieldInfo> fields = new ArrayList<>();
 
-    for (FieldDeclaration field : declaration.getFields()) {
-      for (VariableDeclarator variable : field.getVariables()) {
-        String fieldName = variable.getNameAsString();
-        String columnName = resolveColumnName(field, fieldName);
+		for (FieldDeclaration field : declaration.getFields()) {
+			for (VariableDeclarator variable : field.getVariables()) {
+				String fieldName = variable.getNameAsString();
+				String columnName = resolveColumnName(field, fieldName);
 
-        fields.add(
-            new FieldInfo(
-                fieldName,
-                variable.getType().asString(),
-                columnName,
-                AnnotationSupport.annotationNames(field)));
-      }
-    }
+				fields.add(new FieldInfo(fieldName, variable.getType().asString(), columnName,
+						AnnotationSupport.annotationNames(field)));
+			}
+		}
 
-    return fields;
-  }
+		return fields;
+	}
 
-  private String resolveColumnName(FieldDeclaration field, String defaultName) {
-    return AnnotationSupport.resolveAnnotationValue(field, "Column", "name")
-        .or(() -> AnnotationSupport.resolveAnnotationValue(field, "JoinColumn", "name"))
-        .orElse(defaultName);
-  }
+	/**
+	 * Resolves mapped column name or falls back to field name.
+	 */
+	private String resolveColumnName(FieldDeclaration field, String defaultName) {
+		return AnnotationSupport.resolveAnnotationValue(field, "Column", "name")
+				.or(() -> AnnotationSupport.resolveAnnotationValue(field, "JoinColumn", "name")).orElse(defaultName);
+	}
 }

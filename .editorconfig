@@ -10,10 +10,11 @@ trim_trailing_whitespace = true
 trim_trailing_whitespace = false
 
 [*.java]
-indent_style = space
+indent_style = tab
 indent_size = 4
+tab_width = 4
 ij_continuation_indent_size = 8
-ij_java_use_tab_character = false
+ij_java_use_tab_character = true
 ij_java_keep_simple_methods_in_one_line = false
 ij_java_keep_simple_classes_in_one_line = false
 ij_java_keep_simple_lambdas_in_one_line = false
